@@ -21,11 +21,11 @@
       ansible.builtin.command:
         cmd: steamos-readonly disable
 
-    - name: Pacman Key Init
+    - name: Pacman Keyring Initialization
       ansible.builtin.command:
         cmd: pacman-key --init
 
-    - name: Pacman Key Populate
+    - name: Populate pacman's keyring with the default archlinux gpg keys
       ansible.builtin.command:
         cmd: pacman-key --populate archlinux
     when: steamosro == 'enabled'
