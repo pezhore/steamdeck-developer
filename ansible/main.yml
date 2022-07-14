@@ -10,7 +10,7 @@
       cmd: steamos-readonly status
     ignore_errors: yes
     register: readonly_cmd
-  
+
   - name: Set Fact for SteamOS Ready Only
     ansible.builtin.set_fact:
       steamosro: "{{ readonly_cmd.stdout }}"
@@ -29,7 +29,7 @@
       ansible.builtin.command:
         cmd: pacman-key --populate archlinux
     when: steamosro == 'enabled'
-    
+
   - name: Ensure packages are installed
     community.general.pacman:
       name:
@@ -38,5 +38,22 @@
         - podman
         - tmux
         - code
+        - fuse-overlayfs
+        - slirp4netns
       state: present
-      
+
+  - name: Rootless Podman
+    block:
+      # - name: Set unprivileged usrns clone
+      #   ansible.posix.sysctl:
+      #     name: kernel.unprivileged_userns_clone
+      #     value: '1'
+      #     sysctl_set: yes
+      - name: Ensure subuid and subgid files are populated with the deck user
+        ansible.builtin.copy:
+          dest: "{{ item }}"
+          content: |
+            deck:100000:65536
+        with_items:
+        - /etc/subuid
+        - /etc/subgid
