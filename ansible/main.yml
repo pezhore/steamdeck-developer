@@ -1,0 +1,42 @@
+---
+- name: Recover from SteamOS update
+  hosts: localhost
+  remote_user: deck
+  become: yes
+
+  tasks:
+  - name: Check SteamOS Read Only Status
+    ansible.builtin.command:
+      cmd: steamos-readonly status
+    ignore_errors: yes
+    register: readonly_cmd
+  
+  - name: Set Fact for SteamOS Ready Only
+    ansible.builtin.set_fact:
+      steamosro: "{{ readonly_cmd.stdout }}"
+
+  - name: Recover after Update
+    block:
+    - name: Change to RW file system
+      ansible.builtin.command:
+        cmd: steamos-readonly disable
+
+    - name: Pacman Key Init
+      ansible.builtin.command:
+        cmd: pacman-key --init
+
+    - name: Pacman Key Populate
+      ansible.builtin.command:
+        cmd: pacman-key --populate archlinux
+    when: steamosro == 'enabled'
+    
+  - name: Ensure packages are installed
+    community.general.pacman:
+      name:
+        - terraform
+        - packer
+        - podman
+        - tmux
+        - code
+      state: present
+      
