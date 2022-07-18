@@ -40,6 +40,8 @@
         - code
         - fuse-overlayfs
         - slirp4netns
+        - base-devel
+        - globalprotect-openconnect
       state: present
 
   - name: Rootless Podman
