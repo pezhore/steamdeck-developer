@@ -4,6 +4,9 @@
   remote_user: deck
   become: yes
 
+  vars:
+    filecleanup: false
+
   tasks:
   - name: Check SteamOS Read Only Status
     ansible.builtin.command:
@@ -17,6 +20,30 @@
 
   - name: Recover after Update
     block:
+    - name: Clean up/remove files before package installation
+      ansible.builtin.file:
+        state: absent
+        path: "{{ item }}"
+      with_items:
+        - /etc/containers/registries.d/default.yaml
+        - /opt/cni/bin/bandwidth
+        - /opt/cni/bin/bridge
+        - /opt/cni/bin/dhcp
+        - /opt/cni/bin/firewall
+        - /opt/cni/bin/host-device
+        - /opt/cni/bin/host-local
+        - /opt/cni/bin/ipvlan
+        - /opt/cni/bin/loopback
+        - /opt/cni/bin/macvlan
+        - /opt/cni/bin/portmap
+        - /opt/cni/bin/ptp
+        - /opt/cni/bin/sbr
+        - /opt/cni/bin/static
+        - /opt/cni/bin/tuning
+        - /opt/cni/bin/vlan
+        - /opt/cni/bin/vrf
+        - /etc/vpnc/vpnc-script 
+      when: filecleanup
     - name: Change to RW file system
       ansible.builtin.command:
         cmd: steamos-readonly disable
@@ -44,7 +71,7 @@
         - globalprotect-openconnect
       state: present
 
-  - name: Rootless Podman
+  - name: Rootless Podman and Config
     block:
       # - name: Set unprivileged usrns clone
       #   ansible.posix.sysctl:

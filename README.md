@@ -23,7 +23,6 @@ Once Miniconda is installed and activated (verifiable by the command `conda env 
 
 Once Conda and Ansible are installed, clone this repo and execute the playbook with `ansible-playbook main.yml --ask-become-pass`
 
-
 ## What does this do?
 
 First, we check to see the current status of the SteamOS Read Only with the Ansible builtin command module and `steamos-readonly status`, registering the output (which should be either `enabled`, signifying that the file system is in read-only mode; or `disabled`, signifying that the file system is read-write).
@@ -41,3 +40,28 @@ Regardless of if the file system is read-only or read-write, a set of packages a
 * `podman` - Container management/creation platform
 * `tmux` - Multi terminal windows/panes!
 * `code` - VS Code text editor
+
+## Known Issues
+
+Upon a fresh SteamOS update, some packages will fail to install, listing conflicting files:
+
+- `cni-plugins: /opt/cni/bin/bandwidth exists in filesystem`
+- `cni-plugins: /opt/cni/bin/bridge exists in filesystem`
+- `cni-plugins: /opt/cni/bin/dhcp exists in filesystem`
+- `cni-plugins: /opt/cni/bin/firewall exists in filesystem`
+- `cni-plugins: /opt/cni/bin/host-device exists in filesystem`
+- `cni-plugins: /opt/cni/bin/host-local exists in filesystem`
+- `cni-plugins: /opt/cni/bin/ipvlan exists in filesystem`
+- `cni-plugins: /opt/cni/bin/loopback exists in filesystem`
+- `cni-plugins: /opt/cni/bin/macvlan exists in filesystem`
+- `cni-plugins: /opt/cni/bin/portmap exists in filesystem`
+- `cni-plugins: /opt/cni/bin/ptp exists in filesystem`
+- `cni-plugins: /opt/cni/bin/sbr exists in filesystem`
+- `cni-plugins: /opt/cni/bin/static exists in filesystem`
+- `cni-plugins: /opt/cni/bin/tuning exists in filesystem`
+- `cni-plugins: /opt/cni/bin/vlan exists in filesystem`
+- `cni-plugins: /opt/cni/bin/vrf exists in filesystem`
+- `containers-common: /etc/containers/registries.d/default.yaml exists in filesystem`
+- `vpnc: /etc/vpnc/vpnc-script exists in filesystem`
+
+The Playbook can be run with `filecleanup` var set to true to remove those files.
