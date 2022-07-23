@@ -6,6 +6,7 @@
 
   vars:
     filecleanup: false
+    codeVsxInstall: false
 
   tasks:
   - name: Check SteamOS Read Only Status
@@ -42,8 +43,9 @@
         - /opt/cni/bin/tuning
         - /opt/cni/bin/vlan
         - /opt/cni/bin/vrf
-        - /etc/vpnc/vpnc-script 
+        - /etc/vpnc/vpnc-script
       when: filecleanup
+
     - name: Change to RW file system
       ansible.builtin.command:
         cmd: steamos-readonly disable
@@ -62,14 +64,43 @@
       name:
         - terraform
         - packer
+        - vault
         - podman
         - tmux
         - code
+        - code-marketplace
         - fuse-overlayfs
         - slirp4netns
         - base-devel
         - globalprotect-openconnect
+        - fortune-mod
+        - expect
       state: present
+
+  - name: Set VSCode Settings
+    ansible.builtin.copy:
+      dest: "{{lookup('env','HOME')}}/.config/Code\ -\ OSS/User/settings.json"
+      content: |
+        {
+          "security.workspace.trust.untrustedFiles": "open",
+          "terminal.integrated.fontFamily": "hack",
+        }
+  - name: Install Code Extensions
+    ansible.builtin.command:
+      cmd: "code --install-extension {{ item }}"
+    with_items:
+      - 4ops.packer
+      - coolbear.systemd-unit-file
+      - GitHub.copilot
+      - mechatroner.rainbow-csv
+      - mohsen1.prettify-json
+      - shd101wyy.markdown-preview-enhanced
+      - streetsidesoftware.code-spell-checker
+      - tsandall.opa
+      - golang.go
+      - hashicorp.terraform
+    become_user: deck
+    when: codeVsxInstall
 
   - name: Rootless Podman and Config
     block:
