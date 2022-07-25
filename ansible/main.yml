@@ -75,6 +75,7 @@
         - globalprotect-openconnect
         - fortune-mod
         - expect
+        - stow
       state: present
 
   - name: Set VSCode Settings
