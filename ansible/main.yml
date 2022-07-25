@@ -76,6 +76,8 @@
         - fortune-mod
         - expect
         - stow
+        - libfido2
+        - xclip
       state: present
 
   - name: Set VSCode Settings
