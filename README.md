@@ -25,6 +25,12 @@ Once Conda and Ansible are installed, clone this repo and execute the playbook w
 
 ## What does this do?
 
+Broadly, it helps keep my 256GB Steam Deck in working order for development, side projects, and work as a general purpose workstation. I have a somewhat neat dock, external/portable monitor, and kb/mouse setup. Unfortunately, I'm not yet ready to completely ditch SteamOS for Ubuntu/Windows/[Something Else](https://www.pcgamesn.com/steam-deck/apple-macos-7-mod) and occassionally after SteamOS update pushes the system image changes and my carefully installed software is blown away.
+
+This project is an answer - a way to continue to use my Steam Deck primarily as a workstation replacement, while still allowing for the gaming experience I've come to love.
+
+## What does this do (really)?
+
 First, we check to see the current status of the SteamOS Read Only with the Ansible builtin command module and `steamos-readonly status`, registering the output (which should be either `enabled`, signifying that the file system is in read-only mode; or `disabled`, signifying that the file system is read-write).
 
 Depending on if the file system is in read-only or read-write mode, we can "Recover" after an update:
@@ -37,11 +43,26 @@ Regardless of if the file system is read-only or read-write, a set of packages a
 
 * `terraform` - Infrastructure as Code tool
 * `packer` - Hashicorp tool for image management
-* `podman` - Container management/creation platform
+* `podman`/ `fuse-overlayfs` / `slirp4netns` - Container management/creation platform and tools
 * `tmux` - Multi terminal windows/panes!
-* `code` - VS Code text editor
+* `code`/`code-marketplace` - VS Code text editor and plugin marketplace
+* `base-devel` - gcc, compilers, development things
+* `globalprotect-openconnect` / `expect` - Gotta VPN sometimes
+* `fortune-mod` - Helps with making my shells start off nice
+* `stow` - Dotfile management
+* `libfido2` / `opensc` / `ccid` / `pcsc-tools` - Yubikey things
+* `xclip` - Clipboard management
+
+The playbook goes on to enable the `pcscd` service (to read smart cards/
+yubikeys), and copy over some VSCode setings/install various VSCode Plugins.
+
+Lastly, `subuid`/`subgid` are configured to support rootless podman.
+
+
 
 ## Known Issues
+
+### Existing files
 
 Upon a fresh SteamOS update, some packages will fail to install, listing conflicting files:
 
@@ -65,3 +86,7 @@ Upon a fresh SteamOS update, some packages will fail to install, listing conflic
 - `vpnc: /etc/vpnc/vpnc-script exists in filesystem`
 
 The Playbook can be run with `filecleanup` var set to true to remove those files.
+
+### Copilot Plugin
+
+The Copilot plugin for VSCode requires authentication with Github - something that the default open vscode does not currently support. I'm investigating an alternative.

@@ -77,8 +77,17 @@
         - expect
         - stow
         - libfido2
+        - opensc
+        - ccid
+        - pcsc-tools
         - xclip
       state: present
+
+  - name: Enable and start pcscd
+    ansible.builtin.systemd:
+      name: pcscd
+      enabled: yes
+      state: started
 
   - name: Set VSCode Settings
     ansible.builtin.copy:
@@ -88,6 +97,7 @@
           "security.workspace.trust.untrustedFiles": "open",
           "terminal.integrated.fontFamily": "hack",
         }
+
   - name: Install Code Extensions
     ansible.builtin.command:
       cmd: "code --install-extension {{ item }}"
@@ -107,11 +117,6 @@
 
   - name: Rootless Podman and Config
     block:
-      # - name: Set unprivileged usrns clone
-      #   ansible.posix.sysctl:
-      #     name: kernel.unprivileged_userns_clone
-      #     value: '1'
-      #     sysctl_set: yes
       - name: Ensure subuid and subgid files are populated with the deck user
         ansible.builtin.copy:
           dest: "{{ item }}"
