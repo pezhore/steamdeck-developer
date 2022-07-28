@@ -96,7 +96,14 @@
         {
           "security.workspace.trust.untrustedFiles": "open",
           "terminal.integrated.fontFamily": "hack",
+          "terminal.integrated.defaultProfile.linux": "zsh",
+          "terminal.integrated.profiles.linux": {
+            "zsh": {
+                "path": "/usr/bin/zsh",
+            }
+          } 
         }
+
 
   - name: Install Code Extensions
     ansible.builtin.command:
