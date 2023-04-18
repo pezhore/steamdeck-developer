@@ -90,3 +90,7 @@ The Playbook can be run with `filecleanup` var set to true to remove those files
 ### Copilot Plugin
 
 The Copilot plugin for VSCode requires authentication with Github - something that the default open vscode does not currently support. I'm investigating an alternative.
+
+## Acknowledgements
+
+-  Yay installation/fixes from Reddit User `zhengnanlee` [code](https://pastebin.com/QG0eT6tH).
