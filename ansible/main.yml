@@ -5,8 +5,9 @@
   become: yes
 
   vars:
-    filecleanup: false
-    codeVsxInstall: false
+    filecleanup: true
+    codeVsxInstall: true
+    force: true
 
   tasks:
   - name: Check SteamOS Read Only Status
@@ -44,12 +45,17 @@
         - /opt/cni/bin/vlan
         - /opt/cni/bin/vrf
         - /etc/vpnc/vpnc-script
+        - /etc/ld.so.conf.d/fakeroot.conf
+        - /etc/xdg/autostart/pkcs11-register.desktop
+        - /etc/libccid_Info.plist
+        - /etc/containers/registries.conf.d/00-shortnames.conf
+        - /etc/bind.keys
+        - /etc/ld.so.conf.d/fakeroot.conf
       when: filecleanup
 
     - name: Change to RW file system
       ansible.builtin.command:
         cmd: steamos-readonly disable
-
     - name: Pacman Keyring Initialization
       ansible.builtin.command:
         cmd: pacman-key --init
@@ -57,18 +63,16 @@
     - name: Populate pacman's keyring with the default archlinux gpg keys
       ansible.builtin.command:
         cmd: pacman-key --populate archlinux
-    when: steamosro == 'enabled'
+    when: steamosro == 'enabled' or force
 
   - name: Ensure packages are installed
     community.general.pacman:
       name:
         - terraform
         - packer
-        - vault
         - podman
         - tmux
         - code
-        - code-marketplace
         - fuse-overlayfs
         - slirp4netns
         - base-devel
@@ -81,7 +85,22 @@
         - ccid
         - pcsc-tools
         - xclip
+        - dnsutils
+        - cowsay
       state: present
+
+  - name: Ensure developer things are in place with overwrite
+    community.general.pacman:
+      name:
+        - glibc
+        - gcc-libs
+        - linux-headers
+        - linux-api-headers
+        - linux-neptune-headers
+        - libarchive
+        -zlib
+      state: present
+      extra_args: --overwrite
 
   - name: Enable and start pcscd
     ansible.builtin.systemd:
