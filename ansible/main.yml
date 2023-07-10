@@ -98,9 +98,9 @@
         - linux-api-headers
         - linux-neptune-headers
         - libarchive
-        -zlib
+        - zlib
       state: present
-      extra_args: --overwrite
+      #extra_args: --overwrite
 
   - name: Enable and start pcscd
     ansible.builtin.systemd:
