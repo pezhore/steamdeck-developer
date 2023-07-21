@@ -87,6 +87,7 @@
         - xclip
         - dnsutils
         - cowsay
+        - python-jmespath
       state: present
 
   - name: Ensure developer things are in place with overwrite
